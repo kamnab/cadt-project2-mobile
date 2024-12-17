@@ -44,9 +44,14 @@ Bundle Identifier: com.example.myapp
 ```
 For iOS: Open the Runner project in Xcode, and in the General tab, update the Bundle Identifier.
 
+## Folders structure
+1- models: Models are the collection of data that are usually sourced from the servers, users, or external APIs, these are used in combination with widgets to complete the user interface of the app.
+2- services: This directory will hold the services that are used multiple times or in communication with api in the application.
+3- utilities: This directory will hold all the app logic or business logic of our entire application. 
+4- screens: This directory will contain the actual layout of the UI for the entire application. 
+
 ## Packages
 - flutter_appauth: ^8.0.3
-
 - flutter_secure_storage: ^8.0.0
 Use flutter_secure_storage to securely store and retrieve a token in a Flutter app.
 ```
