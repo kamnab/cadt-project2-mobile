@@ -1,9 +1,9 @@
+import 'package:cadt_project2_mobile/models/login_model.dart';
 import 'package:cadt_project2_mobile/models/tenant_model.dart';
+import 'package:cadt_project2_mobile/modules/login/login_logic.dart';
 import 'package:cadt_project2_mobile/modules/tenant/tenant_logic.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../login/login_logic.dart';
 
 class TenantScreen extends StatefulWidget {
   const TenantScreen({super.key});
@@ -15,28 +15,26 @@ class TenantScreen extends StatefulWidget {
 class _TenantScreenState extends State<TenantScreen> {
   @override
   Widget build(BuildContext context) {
-    final authData = context.watch<LoginLogic>().authData;
-
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Tenant Screen"),
-      ),
+      backgroundColor: Colors.transparent,
       body: _buildBody(),
     );
   }
 
+  late LoginModel? _authData;
   Widget _buildBody() {
+    _authData = context.watch<LoginLogic>().authData;
     bool loading = context.watch<TenantLogic>().loading;
     String? errorMessage = context.watch<TenantLogic>().errorMessage;
 
     debugPrint("loading: $loading");
 
     if (loading) {
-      return Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator());
     } else if (errorMessage != null) {
       return _buildError(errorMessage);
     } else {
-      List<TenantResponse> items = context.watch<TenantLogic>().tenant.tenants;
+      List<Tenant> items = context.watch<TenantLogic>().tenants;
       return _buildData(items);
     }
   }
@@ -52,22 +50,22 @@ class _TenantScreenState extends State<TenantScreen> {
           ),
           ElevatedButton(
             onPressed: () {
-              context.read<TenantLogic>().fetch();
+              context.read<TenantLogic>().fetch(_authData?.accessToken);
             },
-            child: Text("Retry"),
+            child: const Text("Retry"),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildData(List<TenantResponse> items) {
+  Widget _buildData(List<Tenant> items) {
     return RefreshIndicator(
       onRefresh: () async {
-        context.read<TenantLogic>().fetch();
+        context.read<TenantLogic>().fetch(_authData?.accessToken);
       },
       child: ListView.builder(
-        physics: BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         itemCount: items.length,
         itemBuilder: (context, index) {
           return _buildItem(items[index]);
@@ -76,7 +74,7 @@ class _TenantScreenState extends State<TenantScreen> {
     );
   }
 
-  Widget _buildItem(TenantResponse item) {
+  Widget _buildItem(Tenant item) {
     return Card(
       child: ListTile(
         // leading: SizedBox(

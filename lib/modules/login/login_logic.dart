@@ -80,7 +80,6 @@ class LoginLogic extends ChangeNotifier {
           scopes: _scopes));
 
       _processTokenResponse(result);
-      //await _testApi(result);
     } catch (e) {
       _handleError(e);
     } finally {

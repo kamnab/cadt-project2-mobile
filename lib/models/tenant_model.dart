@@ -1,51 +1,28 @@
 import 'dart:convert';
 
-TenantModel TenantModelFromJson(String str) {
-  return TenantModel.fromJson(json.decode(str));
-}
+List<Tenant> tenantFromJson(String str) =>
+    List<Tenant>.from(json.decode(str).map((x) => Tenant.fromJson(x)));
 
-String TenantModelToJson(TenantModel data) => json.encode(data.toJson());
+String tenantToJson(List<Tenant> data) =>
+    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-class TenantModel {
-  List<TenantResponse> tenants;
+class Tenant {
+  final String id;
+  final String name;
+  final String description;
 
-  TenantModel({
-    required this.tenants,
-  });
-
-  factory TenantModel.fromJson(Map<String, dynamic> json) {
-    //print(json);
-
-    return TenantModel(
-        tenants: List<TenantResponse>.from(
-            json["tenants"].map((x) => TenantResponse.fromJson(x))));
-  }
-
-  Map<String, dynamic> toJson() => {
-        "tenants": List<dynamic>.from(tenants.map((x) => x.toJson())),
-      };
-}
-
-class TenantResponse {
-  String id;
-  String name;
-  String description;
-
-  TenantResponse({
+  Tenant({
     required this.id,
     required this.name,
     required this.description,
   });
 
-  factory TenantResponse.fromJson(Map<String, dynamic> json) => TenantResponse(
+  factory Tenant.fromJson(Map<String, dynamic> json) => Tenant(
         id: json["_id"],
         name: json["name"],
-        description: json["description"] ?? "",
+        description: json["description"],
       );
 
-  Map<String, dynamic> toJson() => {
-        "_id": id,
-        "name": name,
-        "description": description,
-      };
+  Map<String, dynamic> toJson() =>
+      {"_id": id, "name": name, "description": description};
 }

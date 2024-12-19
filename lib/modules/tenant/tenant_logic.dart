@@ -4,13 +4,14 @@ import 'package:flutter/material.dart';
 import 'tenant_service.dart';
 
 class TenantLogic extends ChangeNotifier {
-  TenantModel _tenantModel = TenantModel(tenants: []);
-  TenantModel get tenant => _tenantModel;
+  List<Tenant> _tenantModel = [];
+  List<Tenant> get tenants => _tenantModel;
 
   bool _loading = false;
   bool get loading => _loading;
 
   void enableLoading() {
+    _errorMessage = null;
     _loading = true;
     notifyListeners();
   }
@@ -23,11 +24,10 @@ class TenantLogic extends ChangeNotifier {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
-  Future<void> fetch() async {
+  Future<void> fetch(String? token) async {
     enableLoading();
     try {
-      TenantModel response = await TenantService.readData();
-      _tenantModel = response;
+      _tenantModel = await TenantService.readData(token);
     } catch (e) {
       _errorMessage = e.toString();
     }
