@@ -13,6 +13,20 @@ class TenantScreen extends StatefulWidget {
 }
 
 class _TenantScreenState extends State<TenantScreen> {
+  late LoginModel? _authData;
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch tenant data when the screen is first loaded
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _authData = context.read<LoginLogic>().authData;
+      if (_authData?.accessToken != null) {
+        context.read<TenantLogic>().fetch(_authData?.accessToken);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,9 +35,7 @@ class _TenantScreenState extends State<TenantScreen> {
     );
   }
 
-  late LoginModel? _authData;
   Widget _buildBody() {
-    _authData = context.watch<LoginLogic>().authData;
     bool loading = context.watch<TenantLogic>().loading;
     String? errorMessage = context.watch<TenantLogic>().errorMessage;
 
@@ -77,15 +89,6 @@ class _TenantScreenState extends State<TenantScreen> {
   Widget _buildItem(Tenant item) {
     return Card(
       child: ListTile(
-        // leading: SizedBox(
-        //   width: 50,
-        //   height: 50,
-        //   child: CachedNetworkImage(
-        //     //imageUrl: item.image,
-        //     placeholder: (x, y) => Container(color: Colors.grey),
-        //     errorWidget: (x, y, z) => Container(color: Colors.grey[900]),
-        //   ),
-        // ),
         title: Text("${item.name}"),
         subtitle: Text("${item.description}"),
       ),

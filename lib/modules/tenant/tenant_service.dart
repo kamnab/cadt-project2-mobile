@@ -1,6 +1,6 @@
-import 'dart:convert';
-import 'package:cadt_project2_mobile/models/tenant_model.dart';
 import 'package:http/http.dart' as http;
+
+import '../../models/tenant_model.dart';
 
 //android, change from localhost -> 10.0.2.2
 //https://api.talkemie.app/v1/public/files

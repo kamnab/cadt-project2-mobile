@@ -14,6 +14,21 @@ class LandingScreen extends StatefulWidget {
 
 class _LandingScreenState extends State<LandingScreen> {
   int _currentIndex = 0;
+  bool _hasFetchedTenantData = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Trigger tenant data fetch after the first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final loginLogic = context.read<LoginLogic>();
+      if (loginLogic.authData?.idToken != null && !_hasFetchedTenantData) {
+        _fetchTenantData(context);
+        _hasFetchedTenantData = true; // Ensure this runs only once
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,15 +36,10 @@ class _LandingScreenState extends State<LandingScreen> {
       builder: (context, loginLogic, child) {
         bool isLogin = loginLogic.authData?.idToken != null;
 
-        if (isLogin) {
-          // Trigger data reload after user login
-          _fetchTenantData(context);
-        }
-
         return Scaffold(
           appBar: isLogin
               ? AppBar(
-                  title: Text('Classroom Learning App'),
+                  title: const Text('Classroom Learning App'),
                   actions: [
                     IconButton(
                       icon: const Icon(Icons.logout),
@@ -51,25 +61,22 @@ class _LandingScreenState extends State<LandingScreen> {
   }
 
   Widget _buildBody(bool isLogin) {
-    return isLogin
-        ? IndexedStack(
-            index: _currentIndex,
-            children: const [
-              //HomeScreen(),
-              TenantScreen(),
-              Center(
-                child: Text('Search'),
-              ),
-              Center(
-                child: Text('Menu'),
-              )
-            ],
-          )
-        : const LoginScreen();
+    if (!isLogin) {
+      return const LoginScreen();
+    }
+
+    // Display the actual content once logged in
+    return IndexedStack(
+      index: _currentIndex,
+      children: const [
+        TenantScreen(),
+        Center(child: Text('Search')),
+        Center(child: Text('Menu')),
+      ],
+    );
   }
 
   void _fetchTenantData(BuildContext context) {
-    // Call fetch logic when user logs in
     final tenantLogic = context.read<TenantLogic>();
     final authData = context.read<LoginLogic>().authData;
 
